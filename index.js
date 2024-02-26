@@ -6,7 +6,8 @@ const chatContainer = document.getElementById('chat-container');
             { messages: ["hello", "hi", "hey"], responses: ["Hi there!", "Hello!"] },
             { messages: ["time", "clock"], responses: ["It's currently {current time}.", "The time is {current time}."] },
             { messages: ["joke"], responses: ["Why couldn't the bicycle stand up by itself? It was two tired!", "I'm reading a book on anti-gravity. It's impossible to put down!"] },
-            { messages: ["weather"], responses: ["I'm not sure about the weather, maybe you should check a weather app. I will soon be able to tell the weather"] }
+            { messages: ["weather"], responses: ["I'm not sure about the weather, maybe you should check a weather app. I will soon be able to tell the weather"] },
+            { messages: ["you poopy", "you are poop", "your poop"], responses: ["I am not that smart yet, but I will soon be smarter", "Understand that I was just made, so I am not gonna be that smart!"] }
         ];
 
         function appendUserMessage(message) {
