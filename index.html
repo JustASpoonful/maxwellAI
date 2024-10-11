@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chatbot with Math Capabilities</title>
+    <title>Advanced Chatbot with Math Capabilities</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -20,12 +20,13 @@
             background-color: #2a2a2a;
             border-radius: 12px;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-            width: 400px;
+            width: 450px;
             padding: 20px;
+            position: relative; /* Allow positioning of particles */
         }
 
         #chat-box {
-            height: 300px;
+            height: 400px; /* Increased height */
             overflow-y: auto;
             margin-bottom: 10px;
             border: 1px solid #444;
@@ -64,6 +65,8 @@
             color: white;
             cursor: pointer;
             transition: background-color 0.3s, transform 0.3s;
+            position: relative; /* For particle positioning */
+            overflow: hidden; /* Ensure particles are contained */
         }
 
         #send-button:hover {
@@ -93,6 +96,28 @@
             }
             100% {
                 transform: translateY(0);
+            }
+        }
+
+        /* Particle Effect */
+        .particle {
+            position: absolute;
+            background-color: rgba(255, 255, 0, 0.7);
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 1;
+            transform: translate(-50%, -50%);
+            animation: particle-animation 0.5s forwards;
+        }
+
+        @keyframes particle-animation {
+            0% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -150%) scale(0);
+                opacity: 0;
             }
         }
     </style>
@@ -128,6 +153,35 @@
             chatBox.scrollTop = chatBox.scrollHeight; // Auto scroll to bottom
         }
 
+        function createParticles(event) {
+            const buttonRect = sendButton.getBoundingClientRect();
+            const particles = 10; // Number of particles
+
+            for (let i = 0; i < particles; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                document.body.appendChild(particle);
+                
+                // Randomize position and animation duration
+                const x = buttonRect.left + buttonRect.width / 2;
+                const y = buttonRect.top + buttonRect.height / 2;
+
+                particle.style.left = `${x}px`;
+                particle.style.top = `${y}px`;
+                
+                const randomX = Math.random() * 100 - 50; // Random horizontal
+                const randomY = Math.random() * 100 - 50; // Random vertical
+                particle.style.transition = `left 0.5s ease, top 0.5s ease`;
+                particle.style.left = `${x + randomX}px`;
+                particle.style.top = `${y + randomY}px`;
+
+                // Remove particle after animation
+                setTimeout(() => {
+                    particle.remove();
+                }, 500);
+            }
+        }
+
         function isMathQuestion(userText) {
             // Check for basic math operations
             return /[0-9]+[\s]*[+\-x/][\s]*[0-9]+/.test(userText);
@@ -157,10 +211,8 @@
             const mathExpression = extractMathExpression(normalizedInput);
 
             if (mathExpression && isMathQuestion(normalizedInput)) {
-                sendButton.classList.add("math-effect");
-                setTimeout(() => {
-                    sendButton.classList.remove("math-effect"); // Remove effect after animation
-                }, 500);
+                // Create particle effect on send
+                createParticles();
 
                 // Calculate the result
                 const result = calculateExpression(mathExpression);
