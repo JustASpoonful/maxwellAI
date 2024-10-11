@@ -92,6 +92,9 @@
             margin: 5px 0;
             padding: 10px;
             border-radius: 5px;
+            word-wrap: break-word;
+            display: inline-block;
+            max-width: 80%; /* Adjust message width based on text length */
             transition: transform 0.2s;
         }
 
@@ -99,14 +102,13 @@
             background-color: #7289da; /* User message background */
             color: white;
             align-self: flex-end;
-            max-width: 80%;
+            text-align: right;
         }
 
         .bot-message {
             background-color: #4f545c; /* Bot message background */
             color: white;
             align-self: flex-start;
-            max-width: 80%;
         }
 
         /* Sidebar for instructions */
