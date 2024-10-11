@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Maxwell AI</title>
+    <title>Chatbot with Predefined Responses</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -63,7 +63,7 @@
             background-color: #007bff;
             color: white;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: background-color 0.3s, transform 0.3s;
         }
 
         #send-button:hover {
@@ -78,6 +78,22 @@
         .bot-message {
             background-color: #555;
             align-self: flex-start;
+        }
+
+        .math-effect {
+            animation: bounce 0.5s forwards;
+        }
+
+        @keyframes bounce {
+            0% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-5px);
+            }
+            100% {
+                transform: translateY(0);
+            }
         }
     </style>
 </head>
@@ -112,9 +128,38 @@
             chatBox.scrollTop = chatBox.scrollHeight; // Auto scroll to bottom
         }
 
+        function isMathQuestion(userText) {
+            // Check for basic math operations
+            return /[0-9]+[\s]*[+\-x/][\s]*[0-9]+/.test(userText);
+        }
+
+        function calculateExpression(expression) {
+            // Replace 'x' with '*' for multiplication
+            expression = expression.replace(/x/g, '*');
+            try {
+                const result = eval(expression); // Evaluate the expression
+                return result;
+            } catch (error) {
+                return "Sorry, I couldn't evaluate that.";
+            }
+        }
+
         function getResponse(userText) {
             // Normalize the user input to lower case
             const normalizedInput = userText.toLowerCase();
+
+            // Check for math question
+            if (isMathQuestion(normalizedInput)) {
+                sendButton.classList.add("math-effect");
+                setTimeout(() => {
+                    sendButton.classList.remove("math-effect"); // Remove effect after animation
+                }, 500);
+                
+                // Calculate the result
+                const result = calculateExpression(normalizedInput);
+                return `The answer is: ${result}`;
+            }
+
             if (responses[normalizedInput]) {
                 // Get the index of the last response used for this input
                 const count = responseCounts[normalizedInput] || 0;
