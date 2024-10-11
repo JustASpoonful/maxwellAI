@@ -3,120 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Chatbot with Math Capabilities</title>
+    <title>Chatbot</title>
     <style>
         body {
-            font-family: 'Arial', sans-serif;
-            background-color: #1e1e1e;
-            color: #ffffff;
+            background-color: #121212;
+            color: white;
+            font-family: Arial, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
         }
-
         #chat-container {
-            background-color: #2a2a2a;
-            border-radius: 12px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-            width: 450px;
-            padding: 20px;
-            position: relative; /* Allow positioning of particles */
-        }
-
-        #chat-box {
-            height: 400px; /* Increased height */
-            overflow-y: auto;
-            margin-bottom: 10px;
-            border: 1px solid #444;
-            border-radius: 8px;
-            padding: 10px;
-            background-color: #333;
+            width: 600px; /* Wider chat container */
+            height: 600px;
+            background-color: #1e1e1e;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
             display: flex;
             flex-direction: column;
-            gap: 5px;
+            padding: 20px;
+            overflow: hidden;
         }
-
-        #chat-box div {
-            margin: 5px 0;
-            padding: 8px;
-            border-radius: 6px;
-            word-wrap: break-word;
-            opacity: 0; /* Start invisible for VFX */
-            transform: translateY(20px); /* Start slightly lower */
-            transition: opacity 0.3s ease, transform 0.3s ease; /* Transition for VFX */
-        }
-
-        #user-input {
-            width: calc(100% - 120px);
+        #messages {
+            flex: 1;
+            overflow-y: auto;
             padding: 10px;
             border: 1px solid #444;
-            border-radius: 6px;
-            background-color: #444;
-            color: #ffffff;
+            border-radius: 5px;
+            background-color: #2c2c2c;
+            margin-bottom: 10px;
         }
-
+        #input-container {
+            display: flex;
+        }
+        #user-input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #444;
+            border-radius: 5px;
+            background-color: #333;
+            color: white;
+        }
         #send-button {
             padding: 10px;
-            border: none;
-            border-radius: 6px;
             background-color: #007bff;
             color: white;
+            border: none;
+            border-radius: 5px;
             cursor: pointer;
-            transition: background-color 0.3s, transform 0.3s;
-            position: relative; /* For particle positioning */
-            overflow: hidden; /* Ensure particles are contained */
+            margin-left: 10px;
+            transition: background-color 0.3s, transform 0.2s;
         }
-
         #send-button:hover {
             background-color: #0056b3;
         }
-
+        #send-button:active {
+            transform: scale(0.95);
+        }
+        .message {
+            margin: 5px 0;
+            padding: 5px;
+            border-radius: 5px;
+        }
         .user-message {
             background-color: #007bff;
             align-self: flex-end;
         }
-
         .bot-message {
-            background-color: #555;
-            align-self: flex-start;
+            background-color: #444;
         }
-
-        .math-effect {
-            animation: bounce 0.5s forwards;
-        }
-
-        @keyframes bounce {
-            0% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(-5px);
-            }
-            100% {
-                transform: translateY(0);
-            }
-        }
-
-        /* Particle Effect */
+        /* Particle effect */
         .particle {
             position: absolute;
-            background-color: rgba(255, 255, 0, 0.7);
             border-radius: 50%;
             pointer-events: none;
-            opacity: 1;
-            transform: translate(-50%, -50%);
-            animation: particle-animation 0.5s forwards;
+            opacity: 0;
+            animation: particle-animation 0.6s forwards;
         }
-
         @keyframes particle-animation {
             0% {
-                transform: translate(-50%, -50%) scale(1);
+                transform: scale(0);
                 opacity: 1;
             }
             100% {
-                transform: translate(-50%, -150%) scale(0);
+                transform: scale(1);
                 opacity: 0;
             }
         }
@@ -124,129 +96,109 @@
 </head>
 <body>
     <div id="chat-container">
-        <div id="chat-box"></div>
-        <div style="display: flex; gap: 10px;">
-            <input type="text" id="user-input" placeholder="Type your message..." />
+        <div id="messages"></div>
+        <div id="input-container">
+            <input type="text" id="user-input" placeholder="Type your message here..." />
             <button id="send-button">Send</button>
         </div>
     </div>
-    <script src="responses.js"></script>
+
+    <script src="responses.js"></script> <!-- Separate responses file -->
     <script>
-        const chatBox = document.getElementById('chat-box');
-        const userInput = document.getElementById('user-input');
-        const sendButton = document.getElementById('send-button');
+        const messagesDiv = document.getElementById("messages");
+        const userInput = document.getElementById("user-input");
+        const sendButton = document.getElementById("send-button");
 
-        let responseCounts = {};
+        sendButton.addEventListener("click", sendMessage);
+        userInput.addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                sendMessage();
+            }
+        });
 
-        function appendMessage(text, sender) {
-            const messageElement = document.createElement('div');
-            messageElement.textContent = text;
-            messageElement.classList.add(sender === 'You' ? 'user-message' : 'bot-message');
-            chatBox.appendChild(messageElement);
+        function sendMessage() {
+            const userText = userInput.value.trim();
+            if (userText === "") return;
 
-            // VFX: Animate message appearance
-            setTimeout(() => {
-                messageElement.style.opacity = '1';
-                messageElement.style.transform = 'translateY(0)';
-            }, 0); // Start animation immediately
+            // Add user's message to chat
+            addMessage(userText, 'user');
 
-            chatBox.scrollTop = chatBox.scrollHeight; // Auto scroll to bottom
+            // Process response
+            const botResponse = getResponse(userText);
+            addMessage(botResponse, 'bot');
+
+            // Clear input field
+            userInput.value = "";
         }
 
-        function createParticles(event) {
-            const buttonRect = sendButton.getBoundingClientRect();
-            const particles = 10; // Number of particles
+        function addMessage(text, sender) {
+            const messageDiv = document.createElement("div");
+            messageDiv.textContent = text;
+            messageDiv.className = "message " + (sender === 'user' ? 'user-message' : 'bot-message');
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight; // Auto scroll to the bottom
 
-            for (let i = 0; i < particles; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                document.body.appendChild(particle);
-                
-                // Randomize position and animation duration
-                const x = buttonRect.left + buttonRect.width / 2;
-                const y = buttonRect.top + buttonRect.height / 2;
-
-                particle.style.left = `${x}px`;
-                particle.style.top = `${y}px`;
-                
-                const randomX = Math.random() * 100 - 50; // Random horizontal
-                const randomY = Math.random() * 100 - 50; // Random vertical
-                particle.style.transition = `left 0.5s ease, top 0.5s ease`;
-                particle.style.left = `${x + randomX}px`;
-                particle.style.top = `${y + randomY}px`;
-
-                // Remove particle after animation
-                setTimeout(() => {
-                    particle.remove();
-                }, 500);
+            // Particle effect on send button click
+            if (sender === 'user') {
+                createParticleEffect(event.clientX, event.clientY);
             }
         }
 
-        function isMathQuestion(userText) {
-            // Check for basic math operations
-            return /[0-9]+[\s]*[+\-x/][\s]*[0-9]+/.test(userText);
-        }
+        function createParticleEffect(x, y) {
+            const particle = document.createElement("div");
+            particle.className = "particle";
+            particle.style.width = "10px"; // Size of the particle
+            particle.style.height = "10px"; // Size of the particle
+            particle.style.backgroundColor = "#ffcc00"; // Particle color
+            particle.style.left = `${x}px`;
+            particle.style.top = `${y}px`;
+            document.body.appendChild(particle);
 
-        function calculateExpression(expression) {
-            // Replace 'x' with '*' for multiplication
-            expression = expression.replace(/x/g, '*');
-            try {
-                const result = eval(expression); // Evaluate the expression
-                return result;
-            } catch (error) {
-                return "Sorry, I couldn't evaluate that.";
-            }
-        }
-
-        function extractMathExpression(userText) {
-            const match = userText.match(/(?:how\s+)?(?:do\s+)?(?:you\s+)?(?:calculate\s+)?([0-9\s\+\-\*\/x]+)/i);
-            return match ? match[1].trim() : null;
+            // Remove particle after animation
+            particle.addEventListener("animationend", () => {
+                particle.remove();
+            });
         }
 
         function getResponse(userText) {
-            // Normalize the user input to lower case
-            const normalizedInput = userText.toLowerCase();
+            let response = "I'm sorry, I didn't understand that.";
 
-            // Extract math expression from the user input
-            const mathExpression = extractMathExpression(normalizedInput);
+            // Check for predefined responses
+            predefinedResponses.forEach(item => {
+                const matchedTrigger = item.triggers.find(trigger => userText.toLowerCase().includes(trigger));
+                if (matchedTrigger) {
+                    const replies = item.replies;
+                    response = replies[Math.floor(Math.random() * replies.length)];
+                }
+            });
 
-            if (mathExpression && isMathQuestion(normalizedInput)) {
-                // Create particle effect on send
-                createParticles();
-
-                // Calculate the result
-                const result = calculateExpression(mathExpression);
-                return `The answer is: ${result}`;
+            // Handle math problems
+            const mathMatch = userText.match(/(\d+)\s*([\+\-\*\/])\s*(\d+)/);
+            if (mathMatch) {
+                const num1 = parseFloat(mathMatch[1]);
+                const operator = mathMatch[2];
+                const num2 = parseFloat(mathMatch[3]);
+                response = calculate(num1, operator, num2);
             }
 
-            if (responses[normalizedInput]) {
-                // Get the index of the last response used for this input
-                const count = responseCounts[normalizedInput] || 0;
-                const responseList = responses[normalizedInput];
-                const response = responseList[count % responseList.length]; // Cycle through responses
-
-                // Increment the count for future responses
-                responseCounts[normalizedInput] = count + 1;
-                return response;
-            }
-            return "I don't have an answer for that.";
+            return response;
         }
 
-        sendButton.addEventListener('click', () => {
-            const userText = userInput.value.trim();
-            if (userText) {
-                appendMessage(userText, 'You');
-                const botResponse = getResponse(userText);
-                appendMessage(botResponse, 'Bot');
-                userInput.value = ''; // Clear input
+        function calculate(num1, operator, num2) {
+            switch (operator) {
+                case '+':
+                    return `${num1} + ${num2} = ${num1 + num2}`;
+                case '-':
+                    return `${num1} - ${num2} = ${num1 - num2}`;
+                case '*':
+                case 'x':
+                    return `${num1} * ${num2} = ${num1 * num2}`;
+                case '/':
+                    return num2 !== 0 ? `${num1} / ${num2} = ${num1 / num2}` : "You can't divide by zero!";
+                default:
+                    return "I'm sorry, I can't do that.";
             }
-        });
-
-        userInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                sendButton.click();
-            }
-        });
+        }
     </script>
 </body>
 </html>
