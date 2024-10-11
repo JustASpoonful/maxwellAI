@@ -152,6 +152,7 @@
         </div>
     </div>
 
+    <script src="responses.js"></script>
     <script>
         const messagesDiv = document.getElementById("messages");
         const userInput = document.getElementById("user-input");
@@ -190,19 +191,26 @@
         function getResponse(userText) {
             let response = "I'm sorry, I didn't understand that.";
 
-            // Handle simple predefined responses (for demo purposes)
-            const predefinedResponses = [
-                { triggers: ["hi", "hello"], replies: ["Hello! How can I help you today?"] },
-                { triggers: ["bye", "goodbye"], replies: ["Goodbye! Have a great day!"] },
-            ];
+            // Handle math questions
+            if (/\b\d+\s*[\+\-\*\/]\s*\d+\b/.test(userText)) {
+                try {
+                    const answer = eval(userText.replace("x", "*"));
+                    response = `The answer is ${answer}`;
+                } catch (error) {
+                    response = "Sorry, I couldn't calculate that.";
+                }
+                return response;
+            }
 
-            predefinedResponses.forEach(item => {
+            // Handle predefined responses with multiple triggers
+            for (let item of predefinedResponses) {
                 const matchedTrigger = item.triggers.find(trigger => userText.toLowerCase().includes(trigger));
                 if (matchedTrigger) {
                     const replies = item.replies;
                     response = replies[Math.floor(Math.random() * replies.length)];
+                    return response;
                 }
-            });
+            }
 
             return response;
         }
