@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chatbot with Predefined Responses</title>
+    <title>Chatbot with Math Capabilities</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -144,19 +144,26 @@
             }
         }
 
+        function extractMathExpression(userText) {
+            const match = userText.match(/(?:how\s+)?(?:do\s+)?(?:you\s+)?(?:calculate\s+)?([0-9\s\+\-\*\/x]+)/i);
+            return match ? match[1].trim() : null;
+        }
+
         function getResponse(userText) {
             // Normalize the user input to lower case
             const normalizedInput = userText.toLowerCase();
 
-            // Check for math question
-            if (isMathQuestion(normalizedInput)) {
+            // Extract math expression from the user input
+            const mathExpression = extractMathExpression(normalizedInput);
+
+            if (mathExpression && isMathQuestion(normalizedInput)) {
                 sendButton.classList.add("math-effect");
                 setTimeout(() => {
                     sendButton.classList.remove("math-effect"); // Remove effect after animation
                 }, 500);
-                
+
                 // Calculate the result
-                const result = calculateExpression(normalizedInput);
+                const result = calculateExpression(mathExpression);
                 return `The answer is: ${result}`;
             }
 
