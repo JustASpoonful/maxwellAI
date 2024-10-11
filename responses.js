@@ -29,5 +29,10 @@ const responses = {
         "I can help with math, just let me know!",
         "What kind of math problem do you have?"
     ],
+
+    "You are dumb": [
+      "I know, I just have predefined answers. :(",
+      "Sadly I just have predefined answers :c"
+    ],
     // Add more predefined responses here as needed
 };
