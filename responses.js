@@ -1,6 +1,6 @@
 const predefinedResponses = [
     {
-        triggers: ["hi", "hello"],
+        triggers: ["hi", "hello", "hey", "yo", "howdy", "greetings"],
         replies: ["Hello! How can I help you today?", "Hi there!", "Hey! How's it going?"]
     },
     {
