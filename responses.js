@@ -16,7 +16,7 @@ const predefinedResponses = [
         replies: ["Why don't scientists trust atoms? Because they make up everything!", "I would tell you a joke about pizza, but it's too cheesy!", "I’m reading a book on anti-gravity. It’s impossible to put down!"]
     },
      {
-        triggers: ["what do you do", "what are you", "your purpose"],
-        replies: ["I am a going to be a utility that can help with math and do other extremely cool stuff :) This is the only predefined answer to your question so if you ask multiple times, it will just end up being this.", "", ""]
+        triggers: ["your purpose"],
+        replies: ["I am a going to be a utility that can help with math and do other extremely cool stuff :) This is the only predefined answer to your question so if you ask multiple times, it will just end up being this."]
     }
 ];
