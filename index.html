@@ -94,7 +94,7 @@
             border-radius: 5px;
             word-wrap: break-word;
             display: inline-block;
-            max-width: 80%; /* Adjust message width based on text length */
+            max-width: 60%; /* Adjust message width */
             transition: transform 0.2s;
         }
 
@@ -109,6 +109,7 @@
             background-color: #4f545c; /* Bot message background */
             color: white;
             align-self: flex-start;
+            text-align: left;
         }
 
         /* Sidebar for instructions */
@@ -153,98 +154,98 @@
     </div>
 
     <script src="responses.js"></script>
-   <script>
-    const messagesDiv = document.getElementById("messages");
-    const userInput = document.getElementById("user-input");
-    const sendButton = document.getElementById("send-button");
+    <script>
+        const messagesDiv = document.getElementById("messages");
+        const userInput = document.getElementById("user-input");
+        const sendButton = document.getElementById("send-button");
 
-    let lastUserMessage = "";  // Prevent spamming
+        let lastUserMessage = "";  // Prevent spamming
 
-    sendButton.addEventListener("click", sendMessage);
-    userInput.addEventListener("keypress", function(event) {
-        if (event.key === "Enter") {
-            sendMessage();
-        }
-    });
-
-    function sendMessage() {
-        const userText = userInput.value.trim();
-        if (userText === "" || userText === lastUserMessage) return;
-
-        // Add user's message to chat
-        addMessage(userText, 'user');
-        lastUserMessage = userText;  // Store last message
-
-        // Process response
-        const botResponse = getResponse(userText);
-        addMessage(botResponse, 'bot');
-
-        // Clear input field
-        userInput.value = "";
-    }
-
-    function addMessage(text, sender) {
-        const messageDiv = document.createElement("div");
-        messageDiv.textContent = text;
-        messageDiv.className = "message " + (sender === 'user' ? 'user-message' : 'bot-message');
-        messagesDiv.appendChild(messageDiv);
-        messagesDiv.scrollTop = messagesDiv.scrollHeight; // Auto scroll to the bottom
-    }
-
-    function getResponse(userText) {
-        let response = "I'm sorry, I didn't understand that.";
-
-        // Normalize the text to lowercase for easier matching
-        const normalizedText = userText.toLowerCase();
-
-        // Handle math questions
-        const mathRegex = /\b(\d+)\s*([\+\-\*x\/])\s*(\d+)\b/; // Supports +, -, x, / operators
-        const containsMathQuestion = normalizedText.includes("what is") || normalizedText.includes("how do you do");
-
-        if (containsMathQuestion && mathRegex.test(normalizedText)) {
-            try {
-                const mathExpression = normalizedText.match(mathRegex);
-                const num1 = parseFloat(mathExpression[1]);
-                const operator = mathExpression[2];
-                const num2 = parseFloat(mathExpression[3]);
-
-                let answer;
-                switch (operator) {
-                    case "+":
-                        answer = num1 + num2;
-                        break;
-                    case "-":
-                        answer = num1 - num2;
-                        break;
-                    case "x":
-                        answer = num1 * num2;
-                        break;
-                    case "/":
-                        answer = num1 / num2;
-                        break;
-                    default:
-                        answer = "I couldn't calculate that.";
-                }
-                response = `The answer is ${answer}`;
-            } catch (error) {
-                response = "Sorry, I couldn't calculate that.";
+        sendButton.addEventListener("click", sendMessage);
+        userInput.addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                sendMessage();
             }
-            return response;
+        });
+
+        function sendMessage() {
+            const userText = userInput.value.trim();
+            if (userText === "" || userText === lastUserMessage) return;
+
+            // Add user's message to chat
+            addMessage(userText, 'user');
+            lastUserMessage = userText;  // Store last message
+
+            // Process response
+            const botResponse = getResponse(userText);
+            addMessage(botResponse, 'bot');
+
+            // Clear input field
+            userInput.value = "";
         }
 
-        // Handle predefined responses with multiple triggers
-        for (let item of predefinedResponses) {
-            const matchedTrigger = item.triggers.find(trigger => normalizedText.includes(trigger));
-            if (matchedTrigger) {
-                const replies = item.replies;
-                response = replies[Math.floor(Math.random() * replies.length)];
+        function addMessage(text, sender) {
+            const messageDiv = document.createElement("div");
+            messageDiv.textContent = text;
+            messageDiv.className = "message " + (sender === 'user' ? 'user-message' : 'bot-message');
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight; // Auto scroll to the bottom
+        }
+
+        function getResponse(userText) {
+            let response = "I'm sorry, I didn't understand that.";
+
+            // Normalize the text to lowercase for easier matching
+            const normalizedText = userText.toLowerCase();
+
+            // Handle math questions
+            const mathRegex = /\b(\d+)\s*([\+\-\*x\/])\s*(\d+)\b/; // Supports +, -, x, / operators
+            const containsMathQuestion = normalizedText.includes("what is") || normalizedText.includes("how do you do");
+
+            if (containsMathQuestion && mathRegex.test(normalizedText)) {
+                try {
+                    const mathExpression = normalizedText.match(mathRegex);
+                    const num1 = parseFloat(mathExpression[1]);
+                    const operator = mathExpression[2];
+                    const num2 = parseFloat(mathExpression[3]);
+
+                    let answer;
+                    switch (operator) {
+                        case "+":
+                            answer = num1 + num2;
+                            break;
+                        case "-":
+                            answer = num1 - num2;
+                            break;
+                        case "x":
+                            answer = num1 * num2;
+                            break;
+                        case "/":
+                            answer = num1 / num2;
+                            break;
+                        default:
+                            answer = "I couldn't calculate that.";
+                    }
+                    response = `The answer is ${answer}`;
+                } catch (error) {
+                    response = "Sorry, I couldn't calculate that.";
+                }
                 return response;
             }
-        }
 
-        return response;
-    }
-</script>
+            // Handle predefined responses with multiple triggers
+            for (let item of predefinedResponses) {
+                const matchedTrigger = item.triggers.find(trigger => normalizedText.includes(trigger));
+                if (matchedTrigger) {
+                    const replies = item.replies;
+                    response = replies[Math.floor(Math.random() * replies.length)];
+                    return response;
+                }
+            }
+
+            return response;
+        }
+    </script>
 
 </body>
 </html>
