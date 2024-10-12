@@ -24,6 +24,30 @@
             }
         }
 
+        @keyframes gradient-animation-user {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        @keyframes gradient-animation-bot {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
         #chat-container {
             display: flex;
             flex-direction: column;
@@ -99,7 +123,9 @@
         }
 
         .user-message {
-            background: linear-gradient(135deg, #7289da, #5b6fba); /* User message gradient */
+            background: linear-gradient(135deg, #7289da, #5b6fba);
+            background-size: 200% 200%;
+            animation: gradient-animation-user 3s ease infinite;
             color: white;
             align-self: flex-end; /* Align user's message to the right */
             text-align: right;
@@ -109,7 +135,9 @@
         }
 
         .bot-message {
-            background: linear-gradient(135deg, #4f545c, #2f3136); /* Bot message gradient */
+            background: linear-gradient(135deg, #4f545c, #2f3136);
+            background-size: 200% 200%;
+            animation: gradient-animation-bot 3s ease infinite;
             color: white;
             align-self: flex-start; /* Align bot's message to the left */
             text-align: left;
