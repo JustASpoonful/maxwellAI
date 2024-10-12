@@ -3,9 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Maxwell AI</title>
+    <title>Discord-Like Chatbot</title>
     <style>
-        /* Your existing styles remain here */
+        body {
+            background-color: #36393f; /* Discord-like dark background */
+            color: #ffffff;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            height: 100vh;
+            margin: 0;
+            animation: fade-in 1s ease;
+        }
+
+        @keyframes fade-in {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        #chat-container {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            background-color: #2f3136; /* Chat background */
+            border-radius: 10px;
+            margin: 20px;
+            overflow: hidden;
+        }
+
+        #sidebar {
+            width: 250px;
+            background-color: #202225; /* Darker sidebar background */
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        #messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background-color: #36393f; /* Dark message area */
+            border-bottom: 1px solid #444;
+            margin-bottom: 10px;
+        }
+
+        #input-container {
+            display: flex;
+            padding: 10px;
+            background-color: #40444b; /* Discord-like input background */
+        }
+
+        #user-input {
+            flex: 1;
+            padding: 10px;
+            background-color: #40444b;
+            border: 1px solid #555;
+            border-radius: 5px;
+            color: #ffffff;
+            font-size: 14px;
+            outline: none;
+        }
+
+        #user-input:focus {
+            border-color: #7289da;
+        }
+
+        #send-button {
+            padding: 10px 15px;
+            margin-left: 10px;
+            background-color: #7289da; /* Discord accent color */
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            color: white;
+            transition: background-color 0.2s;
+        }
+
+        #send-button:hover {
+            background-color: #5b6fba;
+        }
+
+        .message {
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 5px;
+            word-wrap: break-word;
+            display: inline-block;
+            max-width: 80%; /* Adjust message width based on text length */
+            transition: transform 0.2s;
+        }
+
+        .user-message {
+            background-color: #7289da; /* User message background */
+            color: white;
+            align-self: flex-end;
+            text-align: right;
+        }
+
+        .bot-message {
+            background-color: #4f545c; /* Bot message background */
+            color: white;
+            align-self: flex-start;
+        }
+
+        /* Sidebar for instructions */
+        #instructions {
+            height: 100%;
+            background-color: #202225;
+            padding: 20px;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+        }
+
+        h2 {
+            font-size: 20px;
+            margin: 0 0 10px;
+        }
+
+        p {
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
@@ -34,54 +158,36 @@
     const userInput = document.getElementById("user-input");
     const sendButton = document.getElementById("send-button");
 
-    let lastUserMessage = ""; // To track the last message to avoid spamming
+    let lastUserMessage = "";  // Prevent spamming
 
     sendButton.addEventListener("click", sendMessage);
     userInput.addEventListener("keypress", function(event) {
-        if (event.key === "Enter" && !sendButton.disabled) {
+        if (event.key === "Enter") {
             sendMessage();
         }
     });
 
     function sendMessage() {
         const userText = userInput.value.trim();
-        
-        if (userText === "" || userText === lastUserMessage) return; // Prevent empty message or spam
-
-        lastUserMessage = userText; // Store the message to avoid repeated sending
-
-        // Disable the input and send button temporarily to prevent spam
-        sendButton.disabled = true;
-        userInput.disabled = true;
+        if (userText === "" || userText === lastUserMessage) return;
 
         // Add user's message to chat
         addMessage(userText, 'user');
+        lastUserMessage = userText;  // Store last message
 
         // Process response
-        setTimeout(() => { // Simulate some response delay
-            const botResponse = getResponse(userText);
-            addMessage(botResponse, 'bot');
-
-            // Re-enable the input and send button after responding
-            sendButton.disabled = false;
-            userInput.disabled = false;
-            userInput.focus();
-        }, 500);
+        const botResponse = getResponse(userText);
+        addMessage(botResponse, 'bot');
 
         // Clear input field
         userInput.value = "";
     }
 
     function addMessage(text, sender) {
-        const messageContainer = document.createElement("div");
-        messageContainer.className = "message-container " + (sender === 'user' ? 'user-container' : 'bot-container');
-
         const messageDiv = document.createElement("div");
         messageDiv.textContent = text;
         messageDiv.className = "message " + (sender === 'user' ? 'user-message' : 'bot-message');
-
-        messageContainer.appendChild(messageDiv);
-        messagesDiv.appendChild(messageContainer);
+        messagesDiv.appendChild(messageDiv);
         messagesDiv.scrollTop = messagesDiv.scrollHeight; // Auto scroll to the bottom
     }
 
