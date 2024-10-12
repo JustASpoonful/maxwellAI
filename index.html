@@ -88,30 +88,44 @@
             background-color: #5b6fba;
         }
 
-        .message {
-            margin: 5px 0;
-            padding: 10px;
-            border-radius: 5px;
-            word-wrap: break-word;
-            display: inline-block;
-            max-width: 80%; /* Adjust message width based on text length */
-            transition: transform 0.2s;
+        .message-container {
+            display: flex;
+            margin: 10px 0;
+            width: 100%;
         }
 
         /* User messages aligned to the right */
-        .user-message {
+        .message.user-message {
             background-color: #7289da; /* User message background */
             color: white;
             align-self: flex-end;
             text-align: right;
+            justify-content: flex-end;
         }
 
         /* Bot messages aligned to the left */
-        .bot-message {
+        .message.bot-message {
             background-color: #4f545c; /* Bot message background */
             color: white;
             align-self: flex-start;
-            text-align: left; /* Ensure text is left-aligned */
+            text-align: left;
+            justify-content: flex-start;
+        }
+
+        .message {
+            padding: 10px;
+            border-radius: 10px;
+            word-wrap: break-word;
+            max-width: 60%; /* Adjusted width for chat bubbles */
+        }
+
+        /* Flex container adjustments for left/right separation */
+        .user-container {
+            justify-content: flex-end;
+        }
+
+        .bot-container {
+            justify-content: flex-start;
         }
 
         /* Sidebar for instructions */
@@ -184,10 +198,15 @@
     }
 
     function addMessage(text, sender) {
+        const messageContainer = document.createElement("div");
+        messageContainer.className = "message-container " + (sender === 'user' ? 'user-container' : 'bot-container');
+
         const messageDiv = document.createElement("div");
         messageDiv.textContent = text;
         messageDiv.className = "message " + (sender === 'user' ? 'user-message' : 'bot-message');
-        messagesDiv.appendChild(messageDiv);
+
+        messageContainer.appendChild(messageDiv);
+        messagesDiv.appendChild(messageContainer);
         messagesDiv.scrollTop = messagesDiv.scrollHeight; // Auto scroll to the bottom
     }
 
